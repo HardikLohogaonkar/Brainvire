@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:stretchColumns="1,2,3,4">
+
+    &lt;!&ndash;<androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>&ndash;&gt;
+
+    <TableRow>
+
+        <TextView
+            android:id="@+id/tvCountryName"
+            android:paddingHorizontal="@dimen/x16"
+            tools:text="INR" />
+
+    </TableRow>
+
+</TableLayout>-->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="data"
+            type="com.hul.brainvire.model.GetHistoryData" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/x16"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="18 Jan 2020" />
+
+        <LinearLayout
+            android:id="@+id/llTable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/x16"
+            app:layout_constraintTop_toBottomOf="@id/tvDate">
+
+            <TextView
+                android:id="@+id/tvCurrency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/x4"
+                tools:text="GBP" />
+
+            <TextView
+                android:id="@+id/tvCurrencyValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/x4"
+                tools:text="1.01" />
+
+        </LinearLayout>
+
+        <!--<TableLayout
+            android:id="@+id/tabData"
+            android:layout_width="@dimen/x100"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/x8"
+            android:stretchColumns="1,2,3,4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvDate">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x48">
+
+                <LinearLayout
+                    android:id="@+id/llRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvCountryName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/x16"
+                        tools:text="INR" />
+
+                    <TextView
+                        android:id="@+id/tvCurrencyRate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/x16"
+                        tools:text="INR" />
+
+                </LinearLayout>
+
+            </TableRow>
+
+            &lt;!&ndash;
+                    <TableRow>
+
+                    </TableRow>
+            &ndash;&gt;
+
+        </TableLayout>-->
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
