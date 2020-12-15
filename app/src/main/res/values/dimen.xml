@@ -12,5 +12,6 @@
     <dimen name="x20">20dp</dimen>
     <dimen name="x22">22dp</dimen>
     <dimen name="x24">24dp</dimen>
+    <dimen name="x1">1dp</dimen>
 
 </resources>

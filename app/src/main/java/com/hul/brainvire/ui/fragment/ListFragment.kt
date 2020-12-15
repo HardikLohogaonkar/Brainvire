@@ -3,15 +3,16 @@ package com.hul.brainvire.ui.fragment
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.hul.brainvire.R
+import com.hul.brainvire.model.Exchange
+import com.hul.brainvire.model.ExchangeCurrency
 import com.hul.brainvire.repository.ListRepository
 import com.hul.brainvire.ui.adapter.ListAdapter
 import com.hul.brainvire.util.Resource
@@ -19,17 +20,16 @@ import com.hul.brainvire.util.ViewModelFactory
 import com.hul.brainvire.viewmodel.ListViewModel
 import kotlinx.android.synthetic.main.fragment_list.*
 import kotlinx.android.synthetic.main.fragment_list.view.*
+import org.json.JSONObject
 
 
 class ListFragment : Fragment() {
 
     private lateinit var mViewModel: ListViewModel
     private val mListRepository = ListRepository()
-    private var mList = ArrayList<HashMap<String, HashMap<String, String>>>()
+    private var mList = ArrayList<Exchange>()
     private lateinit var mListAdapter: ListAdapter
     val TAG = "MainActivity"
-    var keyMap = HashMap<String, HashMap<String, String>>()
-    var dateKey: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,36 +43,55 @@ class ListFragment : Fragment() {
 
         if (checkInternetConnection()) {
 
-            mViewModel.getData()
+            mViewModel.getData("2018-01-01","2018-02-01","USD")
 
             mViewModel.mData.observe(viewLifecycleOwner, { response ->
 
                 when (response) {
                     is Resource.Success -> {
 
-                        var jsonObject: JsonObject =
-                            Gson().fromJson(
-                                response.data!!.rates.toString(),
-                                JsonObject::class.java
-                            )
-                        jsonObject.entrySet().forEach { it ->
-                            dateKey = it.key
-                            val jsonElement = it.value
+                        try {
 
-                            val dateData = HashMap<String, String>()
-                            keyMap[dateKey] = dateData
-                            val jsonObject1: JsonObject = jsonElement.asJsonObject
-                            jsonObject1.entrySet().forEach {
-                                val currency = it.key
-                                val values: String = it.value.toString()
+                            Log.d(TAG, "Response: ${response.data!!.rates}")
+                            val jsonObject = JSONObject(response.data.rates.toString())
 
-                                dateData[currency] = values
+                            if (jsonObject != null) {
+
+                                if (jsonObject.keys().hasNext()) {
+
+                                    val exchangeDatesList = ArrayList<Exchange>()
+                                    val iterator: Iterator<String> = jsonObject.keys()
+                                    while (iterator.hasNext()) {
+                                        val dates = Exchange()
+
+                                        var dateKey = iterator.next()
+                                        val dateObject = jsonObject.getJSONObject(dateKey)
+                                        val dateIterator: Iterator<String> = dateObject.keys()
+
+                                        dates.date = dateKey
+                                        val exchangeCurrencyList = ArrayList<ExchangeCurrency>()
+                                        while (dateIterator.hasNext()) {
+
+                                            val currencyKey = dateIterator.next()
+                                            val exchangeValue = dateObject.get(currencyKey)
+                                            val exchangeCurrency = ExchangeCurrency()
+                                            exchangeCurrency.exchangeCurrency = currencyKey
+                                            exchangeCurrency.exchangeValue = exchangeValue as Double
+
+                                            exchangeCurrencyList.add(exchangeCurrency)
+                                        }
+                                        dates.exchangeCurrencyList = exchangeCurrencyList
+                                        exchangeDatesList.add(dates)
+
+                                        mListAdapter =
+                                            ListAdapter(requireActivity(), exchangeDatesList)
+                                        rvHistory.adapter = mListAdapter
+                                    }
+                                }
                             }
-                            mList.add(keyMap)
+                        } catch (e: Exception) {
+                            Log.e("Error", "Msg: ${e.message}")
                         }
-
-                        mListAdapter = ListAdapter(mList)
-                        rvHistory.adapter = mListAdapter
                     }
                     is Resource.Error -> {
 

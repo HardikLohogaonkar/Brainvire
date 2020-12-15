@@ -4,6 +4,6 @@ import com.hul.brainvire.network.NetworkApiClient
 
 class ListRepository {
 
-    suspend fun getHistoryData() =
-        NetworkApiClient.getNetworkServices().getHistory()
+    suspend fun getHistoryData(startAt: String, endAt: String, base: String) =
+        NetworkApiClient.getNetworkServices().getHistory(startAt, endAt, base)
 }

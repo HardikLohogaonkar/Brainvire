@@ -14,18 +14,19 @@ class ListViewModel(private val mListRepository: ListRepository) : ViewModel() {
 
     val mData = MutableLiveData<Resource<GetHistoryData>>()
 
-    fun getData() = viewModelScope.launch(Dispatchers.IO) {
+    fun getData(startAt: String, endAt: String, base: String) =
+        viewModelScope.launch(Dispatchers.IO) {
 
-        mData.postValue(Resource.Loading())
-        val response = mListRepository.getHistoryData()
-        mData.postValue(setData(response))
-    }
+            mData.postValue(Resource.Loading())
+            val response = mListRepository.getHistoryData(startAt, endAt, base)
+            mData.postValue(setData(response))
+        }
 
     private fun setData(response: Response<GetHistoryData>): Resource<GetHistoryData> {
 
         if (response.isSuccessful) {
-            response.body()?.let { imageResponse ->
-                return Resource.Success(imageResponse)
+            response.body()?.let { it ->
+                return Resource.Success(it)
             }
         }
         return Resource.Error(data = null, message = response.message())

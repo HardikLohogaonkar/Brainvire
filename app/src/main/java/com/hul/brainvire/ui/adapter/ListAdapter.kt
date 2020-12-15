@@ -1,18 +1,22 @@
 package com.hul.brainvire.ui.adapter
 
-import android.util.Log
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.hul.brainvire.databinding.ItemListBinding
-import kotlinx.android.synthetic.main.item_list.view.*
+import com.hul.brainvire.model.Exchange
+import com.hul.brainvire.model.ExchangeCurrency
 
 
 class ListAdapter(
-    private val mList: ArrayList<HashMap<String, HashMap<String, String>>>,
-    ) :
+    private val mContext: Context,
+//    private val mList: ArrayList<HashMap<String, HashMap<String, String>>>,
+    private val mList: ArrayList<Exchange>,
+) :
     RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
     var value: String = ""
+//    var dates = Dates()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
 
         val itemListBinding =
@@ -26,21 +30,24 @@ class ListAdapter(
 
         val data = mList[position]
 
-        data.forEach {
-            var date1 = data.keys
-            Log.d("Hardik", "Currency: $it")
-            holder.itemView.tvDate.text = date1.elementAt(position)
-            data.forEach { it ->
-                var currency = data[it.key]
+        holder.itemListBinding.dateBinding = data
+        setGameDetailsRecyclerView(mContext, holder.itemListBinding.rvExchange, data.exchangeCurrencyList)
 
-                holder.itemView.tvCurrency.text = currency!!.entries.elementAt(position).toString()
-
-            }
-        }
     }
 
     override fun getItemCount() = mList.size
 
     class ListViewHolder(val itemListBinding: ItemListBinding) :
-        RecyclerView.ViewHolder(itemListBinding.root)
+        RecyclerView.ViewHolder(itemListBinding.root) {
+
+    }
+
+    fun setGameDetailsRecyclerView(
+        context: Context,
+        recyclerView: RecyclerView,
+        exchangeCurrencyList: ArrayList<ExchangeCurrency>
+    ) {
+        val subListAdapter = CurrencyAdapter(context, exchangeCurrencyList)
+        recyclerView.adapter = subListAdapter
+    }
 }
