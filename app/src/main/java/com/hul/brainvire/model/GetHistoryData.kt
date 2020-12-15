@@ -1,12 +1,9 @@
 package com.hul.brainvire.model
 
 
-import android.annotation.SuppressLint
 import com.google.gson.annotations.SerializedName
 import java.util.*
-import kotlin.collections.HashMap
 
-@SuppressLint("ParcelCreator")
 data class GetHistoryData(
     @SerializedName("base")
     val base: String,
@@ -16,4 +13,14 @@ data class GetHistoryData(
     val rates: Any,
     @SerializedName("start_at")
     val startAt: String
+)
+
+data class Exchange(
+    var date: String? = "",
+    var exchangeCurrencyList: ArrayList<ExchangeCurrency> = ArrayList()
+)
+
+data class ExchangeCurrency(
+    var exchangeCurrency: String? = "",
+    var exchangeValue: Double? = 0.0
 )
