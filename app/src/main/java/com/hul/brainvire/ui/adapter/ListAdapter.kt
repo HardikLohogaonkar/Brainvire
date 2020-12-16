@@ -11,19 +11,14 @@ import com.hul.brainvire.model.ExchangeCurrency
 
 class ListAdapter(
     private val mContext: Context,
-//    private val mList: ArrayList<HashMap<String, HashMap<String, String>>>,
     private val mList: ArrayList<Exchange>,
-) :
-    RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
-    var value: String = ""
-//    var dates = Dates()
+) : RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
 
         val itemListBinding =
             ItemListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         return ListViewHolder(itemListBinding)
-
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
@@ -31,7 +26,11 @@ class ListAdapter(
         val data = mList[position]
 
         holder.itemListBinding.dateBinding = data
-        setGameDetailsRecyclerView(mContext, holder.itemListBinding.rvExchange, data.exchangeCurrencyList)
+        setGameDetailsRecyclerView(
+            mContext,
+            holder.itemListBinding.rvExchange,
+            data.exchangeCurrencyList
+        )
 
     }
 
@@ -42,7 +41,7 @@ class ListAdapter(
 
     }
 
-    fun setGameDetailsRecyclerView(
+    private fun setGameDetailsRecyclerView(
         context: Context,
         recyclerView: RecyclerView,
         exchangeCurrencyList: ArrayList<ExchangeCurrency>

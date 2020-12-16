@@ -7,21 +7,24 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.hul.brainvire.R
+import com.hul.brainvire.databinding.FragmentLoginBinding
 import kotlinx.android.synthetic.main.fragment_login.*
-import kotlinx.android.synthetic.main.fragment_login.view.*
 
 class LoginFragment : Fragment(), View.OnClickListener {
+    private lateinit var mBinding: FragmentLoginBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        var view = inflater.inflate(R.layout.fragment_login, container, false)
+        mBinding = FragmentLoginBinding.inflate(inflater, container, false)
 
-        view.btnLogin.setOnClickListener(this)
+        mBinding.lifecycleOwner = this
 
-        return view
+        mBinding.btnLogin.setOnClickListener(this)
+
+        return mBinding.root
     }
 
     override fun onClick(v: View?) {

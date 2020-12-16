@@ -7,103 +7,108 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.hul.brainvire.R
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.hul.brainvire.databinding.FragmentListBinding
 import com.hul.brainvire.model.Exchange
 import com.hul.brainvire.model.ExchangeCurrency
+import com.hul.brainvire.model.GetHistoryData
 import com.hul.brainvire.repository.ListRepository
 import com.hul.brainvire.ui.adapter.ListAdapter
 import com.hul.brainvire.util.Resource
 import com.hul.brainvire.util.ViewModelFactory
 import com.hul.brainvire.viewmodel.ListViewModel
 import kotlinx.android.synthetic.main.fragment_list.*
-import kotlinx.android.synthetic.main.fragment_list.view.*
-import org.json.JSONObject
 
 
 class ListFragment : Fragment() {
 
     private lateinit var mViewModel: ListViewModel
     private val mListRepository = ListRepository()
-    private var mList = ArrayList<Exchange>()
     private lateinit var mListAdapter: ListAdapter
     val TAG = "MainActivity"
+    private lateinit var mBinding: FragmentListBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        val view = inflater.inflate(R.layout.fragment_list, container, false)
+        mBinding = FragmentListBinding.inflate(inflater, container, false)
+
+        mBinding.lifecycleOwner = this
 
         mViewModel =
             ViewModelProvider(this, ViewModelFactory(mListRepository))[ListViewModel::class.java]
 
         if (checkInternetConnection()) {
 
-            mViewModel.getData("2018-01-01","2018-02-01","USD")
+            mViewModel.getData("2018-01-01", "2018-02-01", "USD")
 
-            mViewModel.mData.observe(viewLifecycleOwner, { response ->
-
-                when (response) {
-                    is Resource.Success -> {
-
-                        try {
-
-                            Log.d(TAG, "Response: ${response.data!!.rates}")
-                            val jsonObject = JSONObject(response.data.rates.toString())
-
-                            if (jsonObject != null) {
-
-                                if (jsonObject.keys().hasNext()) {
-
-                                    val exchangeDatesList = ArrayList<Exchange>()
-                                    val iterator: Iterator<String> = jsonObject.keys()
-                                    while (iterator.hasNext()) {
-                                        val dates = Exchange()
-
-                                        var dateKey = iterator.next()
-                                        val dateObject = jsonObject.getJSONObject(dateKey)
-                                        val dateIterator: Iterator<String> = dateObject.keys()
-
-                                        dates.date = dateKey
-                                        val exchangeCurrencyList = ArrayList<ExchangeCurrency>()
-                                        while (dateIterator.hasNext()) {
-
-                                            val currencyKey = dateIterator.next()
-                                            val exchangeValue = dateObject.get(currencyKey)
-                                            val exchangeCurrency = ExchangeCurrency()
-                                            exchangeCurrency.exchangeCurrency = currencyKey
-                                            exchangeCurrency.exchangeValue = exchangeValue as Double
-
-                                            exchangeCurrencyList.add(exchangeCurrency)
-                                        }
-                                        dates.exchangeCurrencyList = exchangeCurrencyList
-                                        exchangeDatesList.add(dates)
-
-                                        mListAdapter =
-                                            ListAdapter(requireActivity(), exchangeDatesList)
-                                        rvHistory.adapter = mListAdapter
-                                    }
-                                }
-                            }
-                        } catch (e: Exception) {
-                            Log.e("Error", "Msg: ${e.message}")
-                        }
-                    }
-                    is Resource.Error -> {
-
-                        Toast.makeText(activity, "Somthing went wrong", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            })
+            mViewModel.mData.observe(viewLifecycleOwner, getCurrencyObservable)
         } else {
 
-            view.tvNoInternet.visibility = View.VISIBLE
+            mBinding.tvNoInternet.visibility = View.VISIBLE
         }
-        return view
+        return mBinding.root
+    }
+
+    private fun fetchData(response: Resource<GetHistoryData>) {
+
+        try {
+
+            Log.d(TAG, "Response: ${response.data!!.rates}")
+
+            val jsonObject = Gson().fromJson(
+                response.data.rates.toString(),
+                JsonObject::class.java
+            )
+            hideProgressBar()
+
+            jsonObject?.keySet()?.forEach { _ ->
+                val exchangeDatesList = ArrayList<Exchange>()
+                val iterator: Iterator<String> = jsonObject.keySet().iterator()
+                while (iterator.hasNext()) {
+                    val dates = Exchange()
+                    val dateKey = iterator.next()
+                    dates.date = dateKey
+                    val currencyObject = jsonObject.getAsJsonObject(dateKey)
+                    val dateIterator: Iterator<String> =
+                        currencyObject.keySet().iterator()
+                    val exchangeCurrencyList = ArrayList<ExchangeCurrency>()
+                    while (dateIterator.hasNext()) {
+
+                        val currencyKey = dateIterator.next()
+                        val exchangeValue = currencyObject.get(currencyKey)
+                        val exchangeCurrency = ExchangeCurrency()
+                        exchangeCurrency.exchangeCurrency = currencyKey
+                        exchangeCurrency.exchangeValue =
+                            exchangeValue.toString().toDouble()
+
+                        exchangeCurrencyList.add(exchangeCurrency)
+                    }
+                    dates.exchangeCurrencyList = exchangeCurrencyList
+                    exchangeDatesList.add(dates)
+
+                    mListAdapter =
+                        ListAdapter(requireActivity(), exchangeDatesList)
+                    rvHistory.adapter = mListAdapter
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("Error", "Msg: ${e.message}")
+        }
+    }
+
+    private fun hideProgressBar() {
+        mBinding.progressBar.visibility = View.GONE
+    }
+
+    private fun showProgressBar() {
+        mBinding.progressBar.visibility = View.VISIBLE
     }
 
     fun checkInternetConnection(): Boolean {
@@ -114,4 +119,26 @@ class ListFragment : Fragment() {
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting
     }
+
+    private val getCurrencyObservable = Observer<Resource<GetHistoryData>> { response ->
+
+        when (response) {
+            is Resource.Loading -> {
+
+                showProgressBar()
+            }
+
+            is Resource.Success -> {
+                showProgressBar()
+                fetchData(response)
+            }
+            is Resource.Error -> {
+
+                hideProgressBar()
+                mBinding.tvNoInternet.text = "Error while fetching data"
+                mBinding.tvNoInternet.visibility = View.VISIBLE
+            }
+        }
+    }
+
 }

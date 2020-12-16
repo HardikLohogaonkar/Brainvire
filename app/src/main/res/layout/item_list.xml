@@ -1,29 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!--
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:stretchColumns="1,2,3,4">
-
-    &lt;!&ndash;<androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </androidx.constraintlayout.widget.ConstraintLayout>&ndash;&gt;
-
-    <TableRow>
-
-        <TextView
-            android:id="@+id/tvCountryName"
-            android:paddingHorizontal="@dimen/x16"
-            tools:text="INR" />
-
-    </TableRow>
-
-</TableLayout>-->
-
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -45,8 +21,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/x16"
-            app:date="@{dateBinding.date}"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            app:date="@{dateBinding.date}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="18 Jan 2020" />
@@ -59,34 +35,10 @@
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvDate"
-            app:spanCount="3"
-            tools:listitem="@layout/item_exhange">
-
-        </androidx.recyclerview.widget.RecyclerView>
-
-        <!--<LinearLayout
-            android:id="@+id/llTable"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="@dimen/x16"
-            app:layout_constraintTop_toBottomOf="@id/tvDate">
-
-            <TextView
-                android:id="@+id/tvCurrency"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/x4"
-                tools:text="GBP" />
-
-            <TextView
-                android:id="@+id/tvCurrencyValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/x4"
-                tools:text="1.01" />
-
-        </LinearLayout>-->
+            app:spanCount="11"
+            app:reverseLayout="false"
+            android:orientation="horizontal"
+            tools:listitem="@layout/item_exhange"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
