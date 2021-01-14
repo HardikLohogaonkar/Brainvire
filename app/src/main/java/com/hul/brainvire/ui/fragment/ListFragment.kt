@@ -10,10 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.hul.brainvire.databinding.FragmentListBinding
-import com.hul.brainvire.model.Exchange
 import com.hul.brainvire.model.ExchangeCurrency
 import com.hul.brainvire.model.GetHistoryData
 import com.hul.brainvire.repository.ListRepository
@@ -31,6 +28,9 @@ class ListFragment : Fragment() {
     private lateinit var mListAdapter: ListAdapter
     val TAG = "MainActivity"
     private lateinit var mBinding: FragmentListBinding
+    private val mDateList = arrayListOf<String>()
+    var mCurrencyList: ArrayList<ExchangeCurrency> = ArrayList()
+    var map = hashMapOf<String, Double>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,12 +60,36 @@ class ListFragment : Fragment() {
 
         try {
 
-            Log.d(TAG, "Response: ${response.data!!.rates}")
+            hideProgressBar()
 
-            val jsonObject = Gson().fromJson(
-                response.data.rates.toString(),
+            for ((key, value) in response.data!!.rates) {
+                mDateList.add(key)
+                map = value
+
+                Log.d(TAG, "Value: $mCurrencyList")
+            }
+//            Log.d(TAG, "Dates: $mDateList")
+
+            mDateList.forEach {
+                map.forEach {
+                    mCurrencyList.add(
+                        ExchangeCurrency(
+                            it.key,
+                            it.value
+                        )
+                    )
+                }
+            }
+
+            mListAdapter = ListAdapter(requireActivity(), mDateList, mCurrencyList)
+            rvHistory.adapter = mListAdapter
+
+            /*val jsonObject = Gson().fromJson(
+                response.data!!.rates.toString(),
                 JsonObject::class.java
             )
+            Log.d(TAG, "Response: $jsonObject")
+
             hideProgressBar()
 
             jsonObject?.keySet()?.forEach { _ ->
@@ -93,11 +117,12 @@ class ListFragment : Fragment() {
                     dates.exchangeCurrencyList = exchangeCurrencyList
                     exchangeDatesList.add(dates)
 
+                    exchangeDatesList.sortByDescending { it.date }
                     mListAdapter =
                         ListAdapter(requireActivity(), exchangeDatesList)
                     rvHistory.adapter = mListAdapter
                 }
-            }
+            }*/
         } catch (e: Exception) {
             Log.e("Error", "Msg: ${e.message}")
         }

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="x150">150dp</dimen>
-    <dimen name="x120">120dp</dimen>
-    <dimen name="x0">0dp</dimen>
-    <dimen name="x48">48dp</dimen>
-    <dimen name="x64">64dp</dimen>
-    <dimen name="x100">100dp</dimen>
-</resources>

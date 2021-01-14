@@ -1,5 +1,6 @@
 package com.hul.brainvire.util
 
+import android.text.Html
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import java.math.RoundingMode
@@ -17,7 +18,7 @@ fun dateFormatConversion(textView: TextView, inputDate: String?) {
         val outputFormat: DateFormat = SimpleDateFormat("dd MMM yyyy")
         val date: Date = inputFormat.parse(inputDate)
         val outputDateStr: String = outputFormat.format(date)
-        textView.text = "Date: $outputDateStr"
+        textView.text = Html.fromHtml("Date: <b>$outputDateStr</b>")
     }
 }
 
@@ -27,7 +28,7 @@ fun main(textView: TextView, number: Double?) {
         textView.text = ""
     } else {
 
-        val df = DecimalFormat("###.#####")
+        val df = DecimalFormat("##.#####")
         df.roundingMode = RoundingMode.CEILING
         textView.text = df.format(number)
     }

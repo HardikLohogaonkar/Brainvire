@@ -13,5 +13,8 @@
     <dimen name="x22">22dp</dimen>
     <dimen name="x24">24dp</dimen>
     <dimen name="x1">1dp</dimen>
+    <dimen name="x0">0dp</dimen>
+    <dimen name="x100">100dp</dimen>
+    <dimen name="x120">120dp</dimen>
 
 </resources>

@@ -22,10 +22,10 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/x16"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            app:date="@{dateBinding.date}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="18 Jan 2020" />
+<!--        app:date="@{dateBinding.date}"-->
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvExchange"
